@@ -1001,8 +1001,6 @@ function signOutUser() {
 
 // ─── LOAD & SAVE DATA VIA APPS SCRIPT ─────────────────────────────────────────
 async function loadUserData() {
-  // Data lives in browser localStorage keyed to user email
-  // Full persistence via Apps Script on each save
   const key = 'lta_' + currentUser.email;
   const stored = localStorage.getItem(key);
   if (stored) {
@@ -1012,6 +1010,24 @@ async function loadUserData() {
       commitments = parsed.commitments || [];
     } catch(e) { weeklyData = {}; commitments = []; }
   }
+  // Init UI after data is loaded
+  initUI();
+}
+
+function initUI() {
+  const today = new Date();
+  const weekStr = getWeekString(today);
+  document.getElementById('week-picker').value = weekStr;
+  selectedWeek = weekStr;
+  document.getElementById('week-display').textContent = weekLabel(weekStr);
+  // Load saved data for this week if it exists, otherwise add blank rows
+  const existing = weeklyData[weekStr];
+  if (existing) {
+    loadWeekData(weekStr);
+  } else {
+    addMeeting(); addMeeting(); addMeeting();
+    addTask(); addTask(); addTask();
+  }
 }
 
 function saveUserDataLocally() {
@@ -1020,14 +1036,6 @@ function saveUserDataLocally() {
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-window.onload = () => {
-  const today = new Date();
-  const weekStr = getWeekString(today);
-  document.getElementById('week-picker').value = weekStr;
-  updateWeek();
-  addMeeting(); addMeeting(); addMeeting();
-  addTask(); addTask(); addTask();
-};
 
 function getWeekString(date) {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
