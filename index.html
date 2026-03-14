@@ -918,6 +918,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 // ─── APPS SCRIPT ENDPOINT ─────────────────────────────────────────────────────
 // REPLACE WITH YOUR DEPLOYED APPS SCRIPT WEB APP URL
