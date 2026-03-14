@@ -906,8 +906,25 @@
 </div><!-- end app-screen -->
 
 <script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let weeklyData = {};
+let selectedWeek = null;
+let dashWeek = null;
+let commitments = [];
+let charts = {};
+let currentUser = null;
+let currentUserName = '';
+
+const MEETING_ROLES = ['Led it', 'Key contributor', 'Observer', 'Could have skipped', 'Sent someone instead'];
+const TASK_CATS = ['Strategic', 'Operational', 'Administrative', 'Reactive', 'Below my level'];
+const CAT_COLORS = {
+  'Strategic': '#1B4332', 'Operational': '#2D6A4F', 'Administrative': '#B8860B',
+  'Reactive': '#c0392b', 'Below my level': '#8e44ad', 'Led it': '#1B4332',
+  'Key contributor': '#40916C', 'Observer': '#B8860B',
+  'Could have skipped': '#c0392b', 'Sent someone instead': '#7f8c8d',
+};
+
 // ─── FIREBASE CONFIG ──────────────────────────────────────────────────────────
-// REPLACE WITH YOUR FIREBASE PROJECT CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyBPHVZ0vQfaHiRV7597niC1Oewb-BBTLIA",
   authDomain: "scalingminds-tools.firebaseapp.com",
@@ -916,31 +933,26 @@ const firebaseConfig = {
   messagingSenderId: "785541250779",
   appId: "1:785541250779:web:843f9e1e68b75aa156d6fe"
 };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-
-// ─── APPS SCRIPT ENDPOINT ─────────────────────────────────────────────────────
-// REPLACE WITH YOUR DEPLOYED APPS SCRIPT WEB APP URL
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1huLHB0HqdQP15azQZoHeBi1vgMBw3aL2_6dcE0-m0GQNNdtCr1JUnf3oad7rot3L/exec';
 
-// ─── AUTH STATE ───────────────────────────────────────────────────────────────
-let currentUser = null;
-let currentUserName = '';
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-auth.onAuthStateChanged(user => {
-  if (user) {
-    currentUser = user;
-    currentUserName = user.displayName || user.email.split('@')[0];
-    document.getElementById('user-name-display').textContent = currentUserName;
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app-screen').style.display = 'block';
-    loadUserData();
-  } else {
-    currentUser = null;
-    document.getElementById('auth-screen').style.display = 'flex';
-    document.getElementById('app-screen').style.display = 'none';
-  }
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      currentUser = user;
+      currentUserName = user.displayName || user.email.split('@')[0];
+      document.getElementById('user-name-display').textContent = currentUserName;
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('app-screen').style.display = 'block';
+      loadUserData();
+    } else {
+      currentUser = null;
+      document.getElementById('auth-screen').style.display = 'flex';
+      document.getElementById('app-screen').style.display = 'none';
+    }
+  });
 });
 
 function switchAuthTab(tab) {
@@ -1006,31 +1018,6 @@ function saveUserDataLocally() {
   const key = 'lta_' + currentUser.email;
   localStorage.setItem(key, JSON.stringify({ weeklyData, commitments }));
 }
-
-</script>
-
-<script>
-// ─── STATE ───────────────────────────────────────────────────────────────────
-let weeklyData = {}; // { "2024-W12": { meetings, tasks, focusHours, strategicPct, stopDoing } }
-let selectedWeek = null;
-let dashWeek = null;
-let commitments = []; // [{week, text}]
-let charts = {};
-
-const MEETING_ROLES = ['Led it', 'Key contributor', 'Observer', 'Could have skipped', 'Sent someone instead'];
-const TASK_CATS = ['Strategic', 'Operational', 'Administrative', 'Reactive', 'Below my level'];
-const CAT_COLORS = {
-  'Strategic': '#1B4332',
-  'Operational': '#2D6A4F',
-  'Administrative': '#B8860B',
-  'Reactive': '#c0392b',
-  'Below my level': '#8e44ad',
-  'Led it': '#1B4332',
-  'Key contributor': '#40916C',
-  'Observer': '#B8860B',
-  'Could have skipped': '#c0392b',
-  'Sent someone instead': '#7f8c8d',
-};
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 window.onload = () => {
