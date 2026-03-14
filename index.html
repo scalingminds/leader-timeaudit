@@ -1164,20 +1164,11 @@ function saveWeek() {
       ...data,
       commitment: (commitments[0] && commitments[0].week === selectedWeek) ? commitments[0].text : ''
     };
-    // Use no-cors POST — Apps Script accepts this
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = APPS_SCRIPT_URL;
-    form.target = 'hidden_iframe';
-    form.style.display = 'none';
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'payload';
-    input.value = JSON.stringify(payload);
-    form.appendChild(input);
-    document.body.appendChild(form);
-    form.submit();
-    setTimeout(() => document.body.removeChild(form), 3000); // silent fail — data is saved locally regardless
+    // Use GET with encoded payload — bypasses CORS completely
+    const encoded = encodeURIComponent(JSON.stringify(payload));
+    const img = new Image();
+    img.src = `${APPS_SCRIPT_URL}?action=save&data=${encoded}`;
+ // silent fail — data is saved locally regardless
   }
 
   alert('Week saved!');
