@@ -633,6 +633,9 @@
 </head>
 <body>
 
+<!-- hidden iframe for form submit -->
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+
 <!-- AUTH SCREEN -->
 <div id="auth-screen" class="auth-screen">
   <div class="auth-card">
@@ -1161,12 +1164,20 @@ function saveWeek() {
       ...data,
       commitment: (commitments[0] && commitments[0].week === selectedWeek) ? commitments[0].text : ''
     };
-    fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
-    }).catch(() => {}); // silent fail — data is saved locally regardless
+    // Use no-cors POST — Apps Script accepts this
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = APPS_SCRIPT_URL;
+    form.target = 'hidden_iframe';
+    form.style.display = 'none';
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'payload';
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+    setTimeout(() => document.body.removeChild(form), 3000); // silent fail — data is saved locally regardless
   }
 
   alert('Week saved!');
