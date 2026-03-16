@@ -32,6 +32,10 @@ body{font-family:'Inter',sans-serif;background:var(--cream-pale);color:var(--tex
 .auth-btn:hover{background:var(--green-mid);}
 .auth-err{background:#fdecea;border:1px solid #f5c6cb;color:#c0392b;padding:10px 14px;border-radius:6px;font-size:0.82rem;margin-bottom:14px;display:none;}
 .auth-foot{text-align:center;font-size:0.72rem;color:var(--text-muted);margin-top:18px;}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--text-muted);font-size:0.82rem;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.google-btn{width:100%;padding:13px;background:#fff;color:var(--text);border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.15s;}
+.google-btn:hover{border-color:var(--green);background:var(--cream-pale);}
 .app-wrap{display:none;}
 
 /* HEADER */
@@ -163,24 +167,39 @@ textarea:focus{outline:none;border-color:var(--green-light);background:#fff;}
   <div class="auth-card">
     <div class="auth-logo"><img id="auth-logo" src="" alt="Scaling Minds"></div>
     <div class="auth-title">Leader Time Audit</div>
-    <div class="auth-sub">Sign in to track and save your weekly time data</div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchTab('signin')">Sign In</button>
-      <button class="auth-tab" onclick="switchTab('signup')">Create Account</button>
-    </div>
+    <div class="auth-sub">Track your time, reflect, and grow. Sign in to sync across all your devices.</div>
     <div id="auth-err" class="auth-err"></div>
     <div id="signin-form">
-      <div class="field"><label>Email</label><input type="email" id="si-email" placeholder="you@company.com" onkeydown="if(event.key==='Enter')signIn()"></div>
-      <div class="field"><label>Password</label><input type="password" id="si-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')signIn()"></div>
-      <button class="auth-btn" onclick="signIn()">Sign In →</button>
+      <div class="field"><input type="email" id="si-email" placeholder="Email address" onkeydown="if(event.key==='Enter')signIn()"></div>
+      <div class="field" style="position:relative;">
+        <input type="password" id="si-pw" placeholder="Password" onkeydown="if(event.key==='Enter')signIn()">
+        <button onclick="togglePw('si-pw',this)" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--green);font-size:0.82rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Show</button>
+      </div>
+      <button class="auth-btn" onclick="signIn()">Sign In</button>
+      <div class="auth-divider"><span>or</span></div>
+      <button class="google-btn" onclick="signInGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.706c-.18-.54-.282-1.117-.282-1.706s.102-1.166.282-1.706V4.962H.957C.347 6.175 0 7.548 0 9s.348 2.825.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.962L3.964 7.294C4.672 5.167 6.656 3.58 9 3.58z"/></svg>
+        Sign in with Google
+      </button>
+      <div style="text-align:center;margin-top:16px;font-size:0.8rem;color:var(--text-muted);">
+        No account? <button onclick="switchTab('signup')" style="background:none;border:none;color:var(--green);font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.8rem;">Create one</button>
+      </div>
     </div>
     <div id="signup-form" style="display:none;">
-      <div class="field"><label>Your Name</label><input type="text" id="su-name" placeholder="First Last"></div>
-      <div class="field"><label>Email</label><input type="email" id="su-email" placeholder="you@company.com"></div>
-      <div class="field"><label>Password</label><input type="password" id="su-pw" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')signUp()"></div>
-      <button class="auth-btn" onclick="signUp()">Create Account →</button>
+      <div class="field"><input type="text" id="su-name" placeholder="Your name"></div>
+      <div class="field"><input type="email" id="su-email" placeholder="Email address"></div>
+      <div class="field"><input type="password" id="su-pw" placeholder="Password (min 6 characters)" onkeydown="if(event.key==='Enter')signUp()"></div>
+      <button class="auth-btn" onclick="signUp()">Create Account</button>
+      <div class="auth-divider"><span>or</span></div>
+      <button class="google-btn" onclick="signInGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.706c-.18-.54-.282-1.117-.282-1.706s.102-1.166.282-1.706V4.962H.957C.347 6.175 0 7.548 0 9s.348 2.825.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.962L3.964 7.294C4.672 5.167 6.656 3.58 9 3.58z"/></svg>
+        Sign up with Google
+      </button>
+      <div style="text-align:center;margin-top:16px;font-size:0.8rem;color:var(--text-muted);">
+        Have an account? <button onclick="switchTab('signin')" style="background:none;border:none;color:var(--green);font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.8rem;">Sign in</button>
+      </div>
     </div>
-    <div class="auth-foot">© Scaling Minds · Confidential coaching tool</div>
+    <div class="auth-foot">© Scaling Minds</div>
   </div>
 </div>
 
@@ -435,6 +454,12 @@ function switchTab(tab) {
   document.getElementById('auth-err').style.display = 'none';
 }
 function showErr(msg){const e=document.getElementById('auth-err');e.textContent=msg;e.style.display='block';}
+async function signInGoogle(){
+  const provider=new firebase.auth.GoogleAuthProvider();
+  try{await auth.signInWithPopup(provider);}
+  catch(e){showErr(e.message.replace('Firebase: ','').replace(/ \(auth\/.*\)\.?/,''));}
+}
+function togglePw(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'Show':'Hide';}
 async function signIn(){
   const email=document.getElementById('si-email').value.trim();
   const pw=document.getElementById('si-pw').value;
