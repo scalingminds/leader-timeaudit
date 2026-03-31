@@ -526,6 +526,7 @@ function signOutUser(){
 
 // ─── FIRESTORE ────────────────────────────────────────────────────────────────
 async function loadFromFirestore(){
+  // Load submissions
   try{
     const snap = await db.collection('submissions')
       .where('email','==',currentUser.email).get();
@@ -541,11 +542,14 @@ async function loadFromFirestore(){
         docId: doc.id
       };
     });
+  }catch(e){console.error('Load submissions error:',e);weeklyData={};}
+  // Load commitments separately so a failure here doesn't wipe submissions
+  try{
     const cSnap = await db.collection('commitments')
       .where('email','==',currentUser.email)
       .orderBy('timestamp','desc').get();
     commitments = cSnap.docs.map(d=>({week:d.data().week,text:d.data().text}));
-  }catch(e){weeklyData={};commitments=[];}
+  }catch(e){console.error('Load commitments error:',e);commitments=[];}
   initUI();
 }
 
